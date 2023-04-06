@@ -36,3 +36,10 @@ def delete_customer(id):
 
     if customer_index >= 0:
         CUSTOMERS.pop(customer_index)
+
+def update_customer(id, new_customer):
+    '''Handles the PUT request.'''
+    for index, customer in enumerate(CUSTOMERS):
+        if customer["id"] == id:
+            CUSTOMERS[index] = new_customer
+            break
