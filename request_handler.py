@@ -61,26 +61,29 @@ class HandleRequests(BaseHTTPRequestHandler):
             else:
                 response = get_all_animals()
 
-        if resource == "locations":
+        elif resource == "locations":
             if id is not None:
                 response = get_single_location(id)
 
             else:
                 response = get_all_locations()
 
-        if resource == "employees":
+        elif resource == "employees":
             if id is not None:
                 response = get_single_employee(id)
 
             else:
                 response = get_all_employees()
 
-        if resource == "customers":
+        elif resource == "customers":
             if id is not None:
                 response = get_single_customer(id)
 
             else:
                 response = get_all_customers()
+
+        else:
+            response = {}
 
         self.wfile.write(json.dumps(response).encode())
 
@@ -153,7 +156,7 @@ class HandleRequests(BaseHTTPRequestHandler):
         if resource == "locations":
             update_location(id, post_body)
         self.wfile.write("".encode())
-
+        
 
     def _set_headers(self, status):
         # Notice this Docstring also includes information about the arguments passed to the function
