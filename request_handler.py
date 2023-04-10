@@ -47,7 +47,7 @@ class HandleRequests(BaseHTTPRequestHandler):
     # Here's a method on the class that overrides the parent's method.
     # It handles any GET request.
     def do_GET(self):
-        """ String """
+        """ Handles GET requests to the server. """
         self._set_headers(200)
         response = {}  # Default response
 
@@ -57,6 +57,8 @@ class HandleRequests(BaseHTTPRequestHandler):
         if resource == "animals":
             if id is not None:
                 response = get_single_animal(id)
+                if response is None:
+                    self._set_headers(404)
 
             else:
                 response = get_all_animals()
@@ -64,6 +66,8 @@ class HandleRequests(BaseHTTPRequestHandler):
         elif resource == "locations":
             if id is not None:
                 response = get_single_location(id)
+                if response is None:
+                    self._set_headers(404)
 
             else:
                 response = get_all_locations()
@@ -71,14 +75,16 @@ class HandleRequests(BaseHTTPRequestHandler):
         elif resource == "employees":
             if id is not None:
                 response = get_single_employee(id)
-
+                if response is None:
+                    self._set_headers(404)
             else:
                 response = get_all_employees()
 
         elif resource == "customers":
             if id is not None:
                 response = get_single_customer(id)
-
+                if response is None:
+                    self._set_headers(404)
             else:
                 response = get_all_customers()
 
@@ -91,7 +97,7 @@ class HandleRequests(BaseHTTPRequestHandler):
     # It handles any POST request.
     def do_POST(self):
         '''Post method.'''
-        self._set_headers(201)
+        self._set_headers(000)
         content_len = int(self.headers.get('content-length', 0))
         post_body = self.rfile.read(content_len)
 
@@ -102,22 +108,30 @@ class HandleRequests(BaseHTTPRequestHandler):
         (resource, id) = self.parse_url(self.path)
 
         # Initialize new animal
-        new_animal = None
-        new_location = None
         new_employee = None
         new_customer = None
+        created_resource = None
 
         # Add a new animal to the list. Don't worry about
         # the orange squiggle, you'll define the create_animal
         # function next.
         if resource == "animals":
-            new_animal = create_animal(post_body)
+            if "name" in post_body and "species" in post_body and "locationId" in post_body and "customerId" in post_body and "status" in post_body:
+                self._set_headers(201)
+                created_resource = create_animal(post_body)
         # Encode the new animal and send in response
-        self.wfile.write(json.dumps(new_animal).encode())
+            else:
+                self._set_headers(400)
+                created_resource = {
+                    "message": f'{"name is required." if "name" is not post_body else ""} {"species is required." if "species" is not post_body else ""} {"Location is required." if "locationId" is not post_body else ""} {"Customer is required." if "customerId" is not post_body else ""} {"Status is required." if "status" is not post_body else ""}'}
 
         if resource == "locations":
-            new_location = create_location(post_body)
-        self.wfile.write(json.dumps(new_location).encode())
+            if "name" in post_body and "address" in post_body:
+                self._set_headers(201)
+                created_resource = create_location(post_body)
+            else:
+                self._set_headers(400)
+                created_resource = {"message": f'{"name is required." if "name" is not post_body else ""} {"address is required." if "address" is not post_body else ""}'}
 
         if resource == "employees":
             new_employee = create_employee(post_body)
@@ -126,6 +140,8 @@ class HandleRequests(BaseHTTPRequestHandler):
         if resource == "customers":
             new_customer = create_customer(post_body)
         self.wfile.write(json.dumps(new_customer).encode())
+
+        self.wfile.write(json.dumps(created_resource).encode())
 
     # A method that handles any PUT request.
     def do_PUT(self):
@@ -156,7 +172,6 @@ class HandleRequests(BaseHTTPRequestHandler):
         if resource == "locations":
             update_location(id, post_body)
         self.wfile.write("".encode())
-        
 
     def _set_headers(self, status):
         # Notice this Docstring also includes information about the arguments passed to the function
@@ -190,6 +205,7 @@ class HandleRequests(BaseHTTPRequestHandler):
 
     # Parse the URL
         (resource, id) = self.parse_url(self.path)
+        response = {}
 
     # Delete a single animal from the list
         if resource == "animals":
@@ -207,9 +223,8 @@ class HandleRequests(BaseHTTPRequestHandler):
         self.wfile.write("".encode())
 
         if resource == "customers":
-            delete_customer(id)
-        self.wfile.write("".encode())
-
+            self._set_headers(400)
+        self.rfile.write("".encode())
 
 # This function is not inside the class. It is the starting
 # point of this application.
