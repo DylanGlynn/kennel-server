@@ -2,12 +2,18 @@ CUSTOMERS = [
     {
         "id": 1,
         "name": "Ryan Tanay"
+    },
+    {
+        "id": 2,
+        "name": "AJ Nua"
     }
 ]
+
 
 def get_all_customers():
     '''Shows all objects within CUSTOMERS'''
     return CUSTOMERS
+
 
 def get_single_customer(id):
     '''Variable to hold the found customer, if it exists'''
@@ -19,6 +25,7 @@ def get_single_customer(id):
 
     return requested_customer
 
+
 def create_customer(customer):
     '''Get the id value of the last customer in the list.'''
     max_id = CUSTOMERS[-1]["id"]
@@ -26,6 +33,7 @@ def create_customer(customer):
     customer["id"] = new_id
     CUSTOMERS.append(customer)
     return customer
+
 
 def delete_customer(id):
     '''Handles the DELETE requests.'''
@@ -36,6 +44,7 @@ def delete_customer(id):
 
     if customer_index >= 0:
         CUSTOMERS.pop(customer_index)
+
 
 def update_customer(id, new_customer):
     '''Handles the PUT request.'''
