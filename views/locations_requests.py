@@ -1,3 +1,7 @@
+import sqlite3
+import json
+from models import Location
+
 LOCATIONS = [
     {
         "id": 1,
@@ -13,17 +17,48 @@ LOCATIONS = [
 
 def get_all_locations():
     '''Shows all objects within the LOCATIONS array.'''
-    return LOCATIONS
+    with sqlite3.connect("./kennel.sqlite3") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        db_cursor.execute("""
+        SELECT
+            a.id,
+            a.name,
+            a.address
+            FROM location a
+        """)
+
+        locations = []
+        dataset = db_cursor.fetchall()
+
+        for row in dataset:
+            location = Location(row['id'], row['name'], row['address'])
+
+            locations.append(location.__dict__)
+
+    return locations
 
 def get_single_location(id):
     '''Shows a single object within the LOCATIONS array.'''
-    requested_location = None
+    with sqlite3.connect("./kennel.sqlite3") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
 
-    for location in LOCATIONS:
-        if location["id"] == id:
-            requested_location = location
+        db_cursor.execute("""
+        SELECT
+            a.id,
+            a.name,
+            a.address
+        FROM location a
+        WHERE a.id = ?
+        """, ( id, ))
 
-    return requested_location
+        data = db_cursor.fetchone()
+
+        location = Location(data['id'], data['name'], data['address'])
+
+        return location.__dict__
 
 def create_location(location):
     '''Get the id value of the last location in the list.'''
