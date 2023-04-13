@@ -49,7 +49,7 @@ class HandleRequests(BaseHTTPRequestHandler):
         response = {}
         # Parse the URL and capture the tuple that is returned
         parsed = self.parse_url(self.path)
-        print(self.path)
+
         if '?' not in self.path:
             (resource, id) = parsed
 
@@ -148,24 +148,28 @@ class HandleRequests(BaseHTTPRequestHandler):
         # Parse the URL
         (resource, id) = self.parse_url(self.path)
 
+        success = False
+
         # Delete a single animal from the list
         if resource == "animals":
-            update_animal(id, post_body)
+            success = update_animal(id, post_body)
 
-        # Encode the new animal and send in response
+        elif resource == "customers":
+            success = update_customer(id, post_body)
+
+        elif resource == "employees":
+            success = update_employee(id, post_body)
+
+        elif resource == "locations":
+            success = update_location(id, post_body)
+
+        if success:
+            self._set_headers(204)
+        else:
+            self._set_headers(404)
+
         self.wfile.write("".encode())
 
-        if resource == "customers":
-            update_customer(id, post_body)
-        self.wfile.write("".encode())
-
-        if resource == "employees":
-            update_employee(id, post_body)
-        self.wfile.write("".encode())
-
-        if resource == "locations":
-            update_location(id, post_body)
-        self.wfile.write("".encode())
 
     def _set_headers(self, status):
         # Notice this Docstring also includes information about the arguments passed to the function
