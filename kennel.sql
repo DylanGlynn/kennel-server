@@ -23,6 +23,8 @@ CREATE TABLE `Animal` (
 	FOREIGN KEY(`location_id`) REFERENCES `Location`(`id`)
 );
 
+DROP TABLE `Animal`;
+
 
 CREATE TABLE `Employee` (
 	`id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -64,11 +66,14 @@ INSERT INTO `Animal` VALUES (null, "Curly", "Treatment", "Poodle", 4, 2);
 SELECT
     a.id,
     a.name,
-    a.breed,
     a.status,
+    a.breed,
     a.location_id,
     a.customer_id
 FROM animal a
-WHERE a.id = 3
+WHERE a.id = 3;
 
 SELECT * FROM customer
+
+SELECT * FROM animal
+WHERE status = Treatment;
