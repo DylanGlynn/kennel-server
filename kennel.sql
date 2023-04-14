@@ -23,9 +23,6 @@ CREATE TABLE `Animal` (
 	FOREIGN KEY(`location_id`) REFERENCES `Location`(`id`)
 );
 
-DROP TABLE `Animal`;
-
-
 CREATE TABLE `Employee` (
 	`id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 	`name`	TEXT NOT NULL,
@@ -92,3 +89,10 @@ JOIN Location l
 	ON l.id = a.location_id 
 JOIN Customer c
 	ON c.id = a.customer_id;
+
+INSERT INTO `Animal` VALUES (null, "Noob Saibot", "Recreation", "Beagle", 4, 2);
+
+SELECT * FROM Animal ORDER BY id DESC;
+
+DELETE FROM Animal
+WHERE id > 8;
