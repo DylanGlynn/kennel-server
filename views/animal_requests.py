@@ -30,7 +30,7 @@ ANIMALS = [
 ]
 
 
-def get_all_animals():
+def get_all_animals(query_params):
     ''' Performs the GET request for an entire dictionary. '''
     # Open a connection to the database
     with sqlite3.connect("./kennel.sqlite3") as conn:
@@ -39,9 +39,17 @@ def get_all_animals():
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
 
-        # Write the SQL query to get the information you want
-        db_cursor.execute("""
-        SELECT
+        sort_by = ""
+
+        if len(query_params) != 0:
+            param = query_params[0]
+            [qs_key, qs_value] = param.split("=")
+
+            if qs_key == "_sortBy":
+                if qs_value == "location_id":
+                    sort_by = "ORDER BY a.location_id"
+
+        sql_to_execute = f"""SELECT
             a.id,
             a.name,
             a.breed,
@@ -58,7 +66,11 @@ def get_all_animals():
             ON l.id = a.location_id 
         JOIN Customer c
             ON c.id = a.customer_id
-        """)
+        {sort_by}
+        """
+
+        # Write the SQL query to get the information you want
+        db_cursor.execute(sql_to_execute)
 
         # Initialize an empty list to hold all animal representations
         animals = []
@@ -110,7 +122,7 @@ def get_single_animal(id):
             a.breed,
             a.location_id,
             a.customer_id,
-        FROM animal a
+        FROM Animal a
         WHERE a.id = ?
         """, (id, ))
 
