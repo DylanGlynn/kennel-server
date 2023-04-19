@@ -46,8 +46,10 @@ def get_all_animals(query_params):
             [qs_key, qs_value] = param.split("=")
 
             if qs_key == "_sortBy":
-                if qs_value == "location_id":
+                if qs_value == "location":
                     sort_by = "ORDER BY a.location_id"
+                elif qs_value == "customer":
+                    sort_by = "ORDER BY a.customer_id"
 
         sql_to_execute = f"""SELECT
             a.id,

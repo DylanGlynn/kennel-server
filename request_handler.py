@@ -40,7 +40,7 @@ class HandleRequests(BaseHTTPRequestHandler):
             pass
         except ValueError:
             pass
-        print(f'{resource}, {id}, {query_params}')
+
         return (resource, id, query_params)
 
 
@@ -97,10 +97,13 @@ class HandleRequests(BaseHTTPRequestHandler):
             elif query_params.__contains__('status') and resource == 'animals':
                 response = get_animals_by_status(query_params['status'][0])
 
-            elif resource == 'animals' and query_params[0] == '_sortBy=location_id':
+            elif resource == 'animals' and query_params[0] == '_sortBy=location':
                 response = get_all_animals(query_params)
 
-            elif query_params.__contains__('location_id') and resource == 'animals':
+            elif resource == 'animals' and query_params[0] == '_sortBy=customer':
+                response = get_all_animals(query_params)
+
+            elif query_params.__contains__('location') and resource == 'animals':
                 response = get_animals_by_location(query_params['location_id'][0])
 
         self.wfile.write(json.dumps(response).encode())
