@@ -40,6 +40,7 @@ def get_all_animals(query_params):
         db_cursor = conn.cursor()
 
         sort_by = ""
+        where_clause = ""
 
         if len(query_params) != 0:
             param = query_params[0]
@@ -50,6 +51,10 @@ def get_all_animals(query_params):
                     sort_by = "ORDER BY a.location_id"
                 elif qs_value == "customer":
                     sort_by = "ORDER BY a.customer_id"
+
+            if qs_key == "location_id":
+                where_clause = f"WHERE a.location_id = {qs_value}"
+
 
         sql_to_execute = f"""SELECT
             a.id,
@@ -68,6 +73,7 @@ def get_all_animals(query_params):
             ON l.id = a.location_id 
         JOIN Customer c
             ON c.id = a.customer_id
+        {where_clause}
         {sort_by}
         """
 
@@ -123,7 +129,7 @@ def get_single_animal(id):
             a.status,
             a.breed,
             a.location_id,
-            a.customer_id,
+            a.customer_id
         FROM Animal a
         WHERE a.id = ?
         """, (id, ))
