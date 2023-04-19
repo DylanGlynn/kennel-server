@@ -88,8 +88,7 @@ class HandleRequests(BaseHTTPRequestHandler):
 
         else:
             (resource, id, query_params) = parsed
-            print(resource, id, query_params)
-            (query_key, query_value) = query_params[0].split("=")
+            # (query_key, query_value) = query_params[0].split("=")
 
             if query_params.__contains__('email') and resource == 'customers':
                 response = get_customers_by_email(query_params['email'][0])
@@ -100,13 +99,7 @@ class HandleRequests(BaseHTTPRequestHandler):
             elif query_params.__contains__('status') and resource == 'animals':
                 response = get_animals_by_status(query_params['status'][0])
 
-            elif resource == 'animals' and query_params[0] == '_sortBy=location':
-                response = get_all_animals(query_params)
-
-            elif resource == 'animals' and query_key == 'location_id':
-                response = get_all_animals(query_params)
-
-            elif resource == 'animals' and query_params[0] == '_sortBy=customer':
+            elif resource == 'animals':
                 response = get_all_animals(query_params)
 
         self.wfile.write(json.dumps(response).encode())

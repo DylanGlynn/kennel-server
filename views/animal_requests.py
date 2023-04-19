@@ -34,7 +34,6 @@ def get_all_animals(query_params):
     ''' Performs the GET request for an entire dictionary. '''
     # Open a connection to the database
     with sqlite3.connect("./kennel.sqlite3") as conn:
-
         # Just use these. It's a Black Box.
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
@@ -46,15 +45,23 @@ def get_all_animals(query_params):
             param = query_params[0]
             [qs_key, qs_value] = param.split("=")
 
+
             if qs_key == "_sortBy":
                 if qs_value == "location":
                     sort_by = "ORDER BY a.location_id"
                 elif qs_value == "customer":
                     sort_by = "ORDER BY a.customer_id"
+                elif qs_value == "status":
+                    sort_by = "ORDER BY a.status"
 
             if qs_key == "location_id":
                 where_clause = f"WHERE a.location_id = {qs_value}"
 
+            elif qs_key == 'status':
+                where_clause = f"WHERE a.status = '{qs_value}'"
+
+            elif qs_key == 'customer_id':
+                where_clause = f"WHERE a.customer_id = {qs_value}"
 
         sql_to_execute = f"""SELECT
             a.id,
@@ -76,7 +83,7 @@ def get_all_animals(query_params):
         {where_clause}
         {sort_by}
         """
-
+        print(sql_to_execute)
         # Write the SQL query to get the information you want
         db_cursor.execute(sql_to_execute)
 
@@ -93,8 +100,8 @@ def get_all_animals(query_params):
             # Note that the database fields are specified in
             # exact order of the parameters defined in the
             # Animal class above.
-            animal = Animal(row['id'], row['name'], row['breed'],
-                            row['status'], row['location_id'],
+            animal = Animal(row['id'], row['name'], row['status'],
+                            row['breed'], row['location_id'],
                             row['customer_id'])
             location = Location(row['location_id'], row['location_name'],
                                 row['location_address'])
