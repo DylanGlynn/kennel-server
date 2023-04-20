@@ -51,8 +51,8 @@ def get_all_animals(query_params):
                     sort_by = "ORDER BY a.location_id"
                 elif qs_value == "customer":
                     sort_by = "ORDER BY a.customer_id"
-                elif qs_value == "status":
-                    sort_by = "ORDER BY a.status"
+                else:
+                    sort_by = f"ORDER BY a.{qs_value}"
 
             if qs_key == "location_id":
                 where_clause = f"WHERE a.location_id = {qs_value}"
@@ -63,7 +63,8 @@ def get_all_animals(query_params):
             elif qs_key == 'customer_id':
                 where_clause = f"WHERE a.customer_id = {qs_value}"
 
-        sql_to_execute = f"""SELECT
+        sql_to_execute = f"""
+        SELECT
             a.id,
             a.name,
             a.breed,
@@ -72,6 +73,7 @@ def get_all_animals(query_params):
             a.customer_id,
             l.name location_name,
             l.address location_address,
+            l.animals total_animals,
             c.name customer_name,
             c.address customer_address,
             c.email customer_email
@@ -83,7 +85,7 @@ def get_all_animals(query_params):
         {where_clause}
         {sort_by}
         """
-        print(sql_to_execute)
+
         # Write the SQL query to get the information you want
         db_cursor.execute(sql_to_execute)
 
@@ -104,7 +106,7 @@ def get_all_animals(query_params):
                             row['breed'], row['location_id'],
                             row['customer_id'])
             location = Location(row['location_id'], row['location_name'],
-                                row['location_address'])
+                                row['location_address'], row['total_animals'])
             customer = Customer(row['customer_id'],
                                 row['customer_name'],
                                 row['customer_address'],

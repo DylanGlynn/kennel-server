@@ -54,11 +54,9 @@ class HandleRequests(BaseHTTPRequestHandler):
         response = {}
         # Parse the URL and capture the tuple that is returned
         parsed = self.parse_url(self.path)
+        (resource, id, query_params) = parsed
 
         if '?' not in self.path:
-            (resource, id, query_params) = parsed
-            print(query_params)
-
             if resource == "animals":
                 if id is not None:
                     response = get_single_animal(id)
@@ -87,9 +85,6 @@ class HandleRequests(BaseHTTPRequestHandler):
                     response = get_all_customers()
 
         else:
-            (resource, id, query_params) = parsed
-            # (query_key, query_value) = query_params[0].split("=")
-
             if query_params.__contains__('email') and resource == 'customers':
                 response = get_customers_by_email(query_params['email'][0])
 
