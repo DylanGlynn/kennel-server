@@ -1,8 +1,11 @@
 CREATE TABLE `Location` (
 	`id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 	`name`	TEXT NOT NULL,
-	`address`	TEXT NOT NULL
+	`address`	TEXT NOT NULL,
+	`animals` INTEGER
 );
+
+DROP TABLE `Location`;
 
 CREATE TABLE `Customer` (
     `id`    INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -32,9 +35,15 @@ CREATE TABLE `Employee` (
 
 );
 
-INSERT INTO `Location` VALUES (null, 'Nashville North', "64 Washington Heights");
-INSERT INTO `Location` VALUES (null, 'Nashville South', "101 Penn Ave");
+INSERT INTO `Location` VALUES (null, 'Nashville North', "64 Washington Heights", null);
+INSERT INTO `Location` VALUES (null, 'Nashville South', "101 Penn Ave", null);
 
+INSERT INTO `Location`(`animals`) VALUES (1);
+
+INSERT INTO `TestLocation` VALUES (null, 'Nashville North', "64 Washington Heights", [SELECT COUNT(*) FROM Animal a GROUP BY a.location_id;]);
+INSERT INTO `TestLocation` VALUES (null, 'Nashville South', "101 Penn Ave", (SELECT COUNT(*)
+FROM Animal a
+GROUP BY a.location_id;));
 
 INSERT INTO `Employee` VALUES (null, "Madi Peper", "35498 Madison Ave", 1);
 INSERT INTO `Employee` VALUES (null, "Kristen Norris", "100 Main St", 1);
@@ -96,3 +105,21 @@ SELECT * FROM Animal ORDER BY id DESC;
 
 DELETE FROM Animal
 WHERE id > 8;
+
+SELECT l.id, l.name, l.address, COUNT(*)
+FROM Location l
+JOIN Animal a
+ON l.id = a.location_id
+GROUP BY a.location_id;
+
+SELECT * COUNT(*)
+FROM Animal a
+GROUP BY a.location_id;
+
+UPDATE Location SET animals = NULL
+WHERE Location.animals IS NOT NULL;
+
+UPDATE Location
+SET animals = COUNT(*) FROM Animal
+WHERE Location.id = Animal.location_id
+GROUP by Animal.location_id;

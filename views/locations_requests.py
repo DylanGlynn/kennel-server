@@ -21,19 +21,21 @@ def get_all_locations():
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
 
-        db_cursor.execute("""
-        SELECT
-            a.id,
-            a.name,
-            a.address
-            FROM location a
-        """)
+        sql_to_execute = """
+        SELECT l.id, l.name, l.address, COUNT(*) AS `Total_Animals`
+        FROM Location l
+        JOIN Animal a
+        ON l.id = a.location_id
+        GROUP BY a.location_id;
+        """
+
+        db_cursor.execute(sql_to_execute)
 
         locations = []
         dataset = db_cursor.fetchall()
 
         for row in dataset:
-            location = Location(row['id'], row['name'], row['address'])
+            location = Location(row['id'], row['name'], row['address'], row['Total_Animals'])
 
             locations.append(location.__dict__)
 
@@ -47,16 +49,17 @@ def get_single_location(id):
 
         db_cursor.execute("""
         SELECT
-            a.id,
-            a.name,
-            a.address
-        FROM location a
+            l.id,
+            l.name,
+            l.address,
+            l.animals
+        FROM location l
         WHERE a.id = ?
         """, ( id, ))
 
         data = db_cursor.fetchone()
 
-        location = Location(data['id'], data['name'], data['address'])
+        location = Location(data['id'], data['name'], data['address'], data['animals'])
 
         return location.__dict__
 
